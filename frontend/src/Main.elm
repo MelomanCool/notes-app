@@ -54,7 +54,7 @@ viewNote (Note note) =
     [ thead []
         [ th [] [ text note.title ]]
     , tr []
-      [ td [] (Markdown.toHtml Nothing note.text) ]
+        [ td [] (Markdown.toHtml Nothing note.text) ]
     ]
 
 view : Model -> Html Msg
