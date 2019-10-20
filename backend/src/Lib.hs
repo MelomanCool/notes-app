@@ -2,7 +2,6 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Lib
     ( webAppEntry
@@ -10,17 +9,15 @@ module Lib
     , Note
     ) where
 
-import Control.Monad.IO.Class (liftIO)
-import Data.Aeson
-import Data.Aeson(ToJSON, FromJSON)
-import Data.Aeson.Types
-import Data.Maybe (fromMaybe)
-import GHC.Generics(Generic)
-import Network.Wai(Application)
-import Network.Wai.Handler.Warp(run)
-import Network.Wai.Middleware.Cors (simpleCors)
-import Servant(serve, Proxy(..), Server, JSON, Get, (:>))
+import           Control.Monad.IO.Class (liftIO)
+import           Data.Aeson (ToJSON, FromJSON, decode)
 import qualified Data.ByteString.Lazy as B
+import           Data.Maybe (fromMaybe)
+import           GHC.Generics (Generic)
+import           Network.Wai (Application)
+import           Network.Wai.Handler.Warp (run)
+import           Network.Wai.Middleware.Cors (simpleCors)
+import           Servant (serve, Proxy(..), Server, JSON, Get, (:>))
 
 
 data Tag = Tag { id :: Int
