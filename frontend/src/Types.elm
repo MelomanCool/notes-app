@@ -7,6 +7,5 @@ type Tag = Tag { id : Int
 type Note = Note { id : Int
                  , title : String
                  , text : String
-                 , textFormat : String
                  , tags : List Tag
                  }

@@ -22,12 +22,11 @@ encodeTag (Tag record) =
 
 decodeNote : D.Decoder Note
 decodeNote =
-  D.map5 (\ id title text textFormat tags
-         -> Note { id = id, title = title, text = text, textFormat = textFormat, tags = tags } )
+  D.map4 (\ id title text tags
+         -> Note { id = id, title = title, text = text, tags = tags } )
     (D.field "id" D.int)
     (D.field "title" D.string)
     (D.field "text" D.string)
-    (D.field "textFormat" D.string)
     (D.field "tags" <| D.list decodeTag )
 
 encodeNote : Note -> E.Value
@@ -36,6 +35,5 @@ encodeNote (Note record) =
         [ ("id",  E.int <| record.id)
         , ("title",  E.string <| record.title)
         , ("text",  E.string <| record.text)
-        , ("textFormat",  E.string <| record.textFormat)
         , ("tags",  E.list encodeTag record.tags)
         ]

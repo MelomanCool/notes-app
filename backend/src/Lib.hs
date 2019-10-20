@@ -7,7 +7,6 @@
 module Lib
     ( webAppEntry
     , Tag
-    , TextFormat(..)
     , Note
     ) where
 
@@ -32,21 +31,9 @@ instance ToJSON Tag
 instance FromJSON Tag
 
 
-data TextFormat
-  = Markdown
-  deriving (Show)
-
-instance ToJSON TextFormat where
-  toJSON Markdown = "Markdown"
-
-instance FromJSON TextFormat where
-  parseJSON (String "Markdown") = pure Markdown
-
-
 data Note = Note { id :: Int
                  , title :: String
                  , text :: String
-                 , textFormat :: TextFormat
                  , tags :: [Tag]
                  } deriving (Generic, Show)
 
