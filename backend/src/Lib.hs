@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Lib
     ( webAppEntry
@@ -9,20 +9,22 @@ module Lib
     , Note
     ) where
 
-import           Control.Exception (IOException, catch)
-import           Control.Monad.IO.Class (liftIO)
-import           Data.Aeson (ToJSON, FromJSON, eitherDecode)
-import qualified Data.ByteString.Lazy as B
-import           Data.ByteString.Lazy.UTF8 as BLU
-import           Data.Maybe (fromMaybe)
-import           GHC.Generics (Generic)
-import           Network.Wai (Application)
-import           Network.Wai.Handler.Warp (run)
+import           Control.Exception           (IOException, catch)
+import           Control.Monad.IO.Class      (liftIO)
+import           Data.Aeson                  (FromJSON, ToJSON, eitherDecode)
+import qualified Data.ByteString.Lazy        as B
+import           Data.ByteString.Lazy.UTF8   as BLU
+import           Data.Maybe                  (fromMaybe)
+import           GHC.Generics                (Generic)
+import           Network.Wai                 (Application)
+import           Network.Wai.Handler.Warp    (run)
 import           Network.Wai.Middleware.Cors (simpleCors)
-import           Servant (serve, Proxy(Proxy), Server, JSON, Get, (:>), Handler, throwError, err500, errBody)
+import           Servant                     ((:>), Get, Handler, JSON,
+                                              Proxy (Proxy), Server, err500,
+                                              errBody, serve, throwError)
 
 
-data Tag = Tag { id :: Int
+data Tag = Tag { id   :: Int
                , name :: String
                } deriving (Generic, Show)
 
@@ -30,10 +32,10 @@ instance ToJSON Tag
 instance FromJSON Tag
 
 
-data Note = Note { id :: Int
+data Note = Note { id    :: Int
                  , title :: String
-                 , text :: String
-                 , tags :: [Tag]
+                 , text  :: String
+                 , tags  :: [Tag]
                  } deriving (Generic, Show)
 
 instance ToJSON Note
