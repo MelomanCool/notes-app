@@ -1,7 +1,11 @@
 import Browser
-import Html exposing (Html, text, div, table, thead, th, tr, td, pre)
+import Element exposing (..)
+import Element.Border as Border
+import Element.Input as Input
+import Html exposing (Html)
 import Http
 import Json.Decode exposing (decodeString, list, errorToString)
+import Json.Encode exposing (encode)
 import Markdown
 
 import Json exposing (decodeTag, encodeTag, decodeNote, encodeNote)
@@ -35,6 +39,7 @@ init _ =
 
 type Msg
   = GotText (Result Http.Error String)
+  | UpdatedNote String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -47,29 +52,71 @@ update msg model =
         Err _ ->
           (Failure, Cmd.none)
 
+    UpdatedNote noteString ->
+      (Success noteString, Cmd.none)
 
-viewNote : Note -> Html Msg
-viewNote (Note note) =
-  table []
-    [ thead []
-        [ th [] [ text note.title ]]
-    , tr []
-        [ td [] (Markdown.toHtml Nothing note.text) ]
+
+renderedPanel : Note -> Element Msg
+renderedPanel (Note note) =
+  column
+    [ height fill
+    , width fill
+    , padding 20
     ]
+    [ paragraph []
+        [ html (Markdown.toHtml [] note.text) ]
+    ]
+
+editPanel : Note -> Element Msg
+editPanel (Note note) =
+    column [ height fill
+           , width fill
+           ]
+        [ (Input.multiline [ height fill, Border.rounded 0 ]
+                    { label = Input.labelHidden ""
+                    , onChange = (\x -> Note { note | text = x}
+                                 |> encodeNote
+                                 |> encode 0
+                                 |> (\y -> "[" ++ y ++ "]")
+                                 |> UpdatedNote)
+                    , placeholder = Nothing
+                    , spellcheck = False
+                    , text = note.text
+                    })
+        ]
+
 
 view : Model -> Html Msg
 view model =
-  case model of
-    Failure ->
-      text "I was unable to load your book."
+  layout [] <|
+    case model of
+      Failure ->
+        text "I was unable to load your book."
 
-    Loading ->
-      text "Loading..."
+      Loading ->
+        text "Loading..."
 
-    Success fullText ->
-      case decodeString (list decodeNote) fullText of
-        Ok notes ->
-          div [] (List.map viewNote notes)
-            
-        Err error ->
-          text <| errorToString error
+      Success fullText ->
+        case decodeString (list decodeNote) fullText of
+          Ok notes ->
+            row [ height fill, width fill ]
+                [ editPanel
+                    (notes
+                    |> List.head
+                    |> Maybe.withDefault
+                       (Note { id = 0
+                             , tags = []
+                             , text = ""
+                             , title = ""}))
+                , renderedPanel
+                    (notes
+                    |> List.head
+                    |> Maybe.withDefault
+                       (Note { id = 0
+                             , tags = []
+                             , text = ""
+                             , title = ""}))
+                ]
+
+          Err error ->
+            text <| errorToString error
