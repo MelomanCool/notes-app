@@ -17,7 +17,7 @@ import           GHC.Generics (Generic)
 import           Network.Wai (Application)
 import           Network.Wai.Handler.Warp (run)
 import           Network.Wai.Middleware.Cors (simpleCors)
-import           Servant (serve, Proxy(..), Server, JSON, Get, (:>))
+import           Servant (serve, Proxy(..), Server, JSON, Get, (:>), Handler, throwError, err404)
 
 
 data Tag = Tag { id :: Int
@@ -38,16 +38,21 @@ instance ToJSON Note
 instance FromJSON Note
 
 
-notes :: IO [Note]
-notes = do
-  notesStr <- B.readFile "notes.json"
-  return $ fromMaybe [] (decode notesStr :: Maybe [Note])
+loadNotes :: IO (Maybe [Note])
+loadNotes = fmap decode (B.readFile "notes.json")
+
+notesHandler :: Handler [Note]
+notesHandler = do
+  mNotes <- liftIO $ loadNotes
+  case mNotes of
+    Just notes -> return notes
+    Nothing    -> throwError err404
 
 
 type NoteAPI = "notes" :> Get '[JSON] [Note]
 
 server :: Server NoteAPI
-server = liftIO notes
+server = notesHandler
 
 noteAPI :: Proxy NoteAPI
 noteAPI = Proxy
