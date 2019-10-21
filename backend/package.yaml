@@ -13,6 +13,7 @@ dependencies:
 - wai # web application (interface)
 - warp # web application implementation
 - bytestring
+- utf8-string
 - wai-cors
 
 library:
